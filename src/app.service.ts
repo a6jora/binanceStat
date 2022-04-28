@@ -10,7 +10,7 @@ export class AppService {
         let contract = new web3.eth.Contract(abi, address);
         let hashes = new Set();
         // let firstData = 0;
-        let addressFrom = new Map();
+        let addressSet = new Set();
         let breakPoint = false;
         for (let i = 0; i < 1000; i++) {
             let data = await contract.getPastEvents("Transfer",
@@ -24,15 +24,19 @@ export class AppService {
                     if (value.blockNumber >= 896051) {
                         breakPoint = true;
                     }
-                    hashes.add(value.transactionHash);
-                    if (!addressFrom.has(value.returnValues['from'])) {
+                    // hashes.add(value.transactionHash);
+                    if (!addressSet.has(value.returnValues['from'])) {
                         // поиск по дате транзакции
                         // let timestamp = web3.eth.getBlock(value.blockNumber).timestamp;
                         // if (!firstData)
                         //     firstData = timestamp;
                         // else if ((timestamp - firstData) > 7 * 24 * 60 * 60)
                         //     breakPoint = true;
-                        addressFrom.set(value.returnValues['from'], [value.transactionHash, value.blockNumber]);
+
+                        // коллекция типа map была использована для нахождения граничного блока
+                        // addressSet.set(value.returnValues['from'], [value.transactionHash, value.blockNumber]);
+
+                        addressSet.add(value.returnValues['from']);
                     }
                 }
             })
